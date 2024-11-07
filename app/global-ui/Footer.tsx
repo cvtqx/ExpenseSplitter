@@ -41,7 +41,7 @@ const Footer = () => {
         <p className='text-gray text-center text-sm leading-loose text-muted-foreground md:text-left'>
           The source code is available on{' '}
           <a
-            href='https://github.com/chingu-voyages/v51-tier3-team-33'
+            href='https://github.com/cvtqx/ExpenseSplitter'
             target='_blank'
             rel='noreferrer'
             className='font-medium underline underline-offset-4'>

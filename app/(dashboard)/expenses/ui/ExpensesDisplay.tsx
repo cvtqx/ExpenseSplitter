@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 const ExpensesDisplay = () => {
     const { userExpenses } =
         useUserContext();
-    
+    console.log('user Expenses', userExpenses)
     //sort expenses from most recent 
     const sortedExpenses = [...userExpenses].sort((a, b) => {
       return new Date(b.date).getTime() - new Date(a.date).getTime();
