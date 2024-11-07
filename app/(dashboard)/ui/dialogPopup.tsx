@@ -18,9 +18,11 @@ export function DialogPopup() {
 
   const router = useRouter();
 
-  const logoutHandler = () => {
-    console.log('logged out')
-    signOut({ redirect: false, callbackUrl: 'http://localhost:3000/login' });
+  const logoutHandler = async () => {
+    await signOut({
+      redirect: false,
+      callbackUrl: 'http://localhost:3000/login',
+    });
     router.push('/login')
   }
 

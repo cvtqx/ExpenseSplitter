@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { useUserContext } from '@/app/context/UserContext';
 import { ScrollArea } from '@/components/ui/scroll-area';
