@@ -1,8 +1,8 @@
 'use client'
 import { Button } from '@/components/ui/button';
-import { useUserContext } from '../../context/UserContext';
+import { useUserContext } from '@/app/context/UserContext';
 import { useRouter } from 'next/navigation';
-import ExpensesDisplay from './ui/ExpensesDisplay';
+import ExpensesDisplay from '../ui/ExpensesDisplay';
 
 export default function Page() {
   const { userDetails } = useUserContext();
@@ -21,7 +21,7 @@ export default function Page() {
         </Button>
       </div>
       <h2 className='font-bold'>Your expenses</h2>
-      <ExpensesDisplay/>
+      <ExpensesDisplay />
     </div>
   );
 }
