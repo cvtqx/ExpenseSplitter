@@ -19,11 +19,9 @@ interface Group {
 const Groups = () => {
   const { userDetails, userGroups, setUserGroups } = useUserContext();
 
-  console.log(userGroups);
   const { toast } = useToast();
   const router = useRouter();
 
-  //TO DO TO DO implement deletion
   const handleDeleteGroup = async (groupId: string) => {
     console.log('deleting', groupId);
     try {

@@ -5,14 +5,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import RecentActivity from './ui/recentActivity';
 import ExpensesThisMonth from './ui/expensesThisMonth';
 import ExpensesGraph from './ui/expensesGraph';
+import DashboardSkeleton from '@/app/global-ui/skeletons';
 
-export default function Page() {  
-const { userDetails, userGroups, userFriends, userContribution } =
-  useUserContext();
+export default function Page() {
+  const { userDetails, userGroups, userFriends, userContribution } =
+    useUserContext();
 
   return (
     <div className='relative'>
-      {/* Banner Section */}
+      {/* Banner Section */}      
       <div
         className='bg-cover bg-center h-48 flex items-center justify-center relative rounded-lg mb-10'
         style={{ backgroundImage: 'url(/images/logo/banner.jpg)' }}>
@@ -20,8 +21,8 @@ const { userDetails, userGroups, userFriends, userContribution } =
           <AvatarImage src={userDetails?.image ?? undefined} />
           <AvatarFallback>CN</AvatarFallback>{' '}
         </Avatar>
-      </div>
-
+        </div>
+        
       {/* Content Below Banner */}
       <div className='p-4'>
         <h2 className='text-xl font-semibold'>
@@ -35,7 +36,9 @@ const { userDetails, userGroups, userFriends, userContribution } =
           <div>
             <p>
               Life time contributions:{' '}
-              <span className='font-bold block'>${Math.round(userContribution)}</span>
+              <span className='font-bold block'>
+                ${Math.round(userContribution)}
+              </span>
             </p>
           </div>
           <div className='flex flex-row gap-5'>
@@ -49,6 +52,7 @@ const { userDetails, userGroups, userFriends, userContribution } =
         </div>
         <div className='flex flex-col md:flex-row gap-10 mt-10'>
           <RecentActivity />
+
           <ExpensesThisMonth />
         </div>
         <div className='mt-10'>

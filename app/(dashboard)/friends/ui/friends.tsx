@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 
-
 const Friends = () => {
   const { userDetails, userFriends, setUserFriends } = useUserContext();
 
