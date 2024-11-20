@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useUserContext } from '../../../context/UserContext';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
@@ -34,15 +34,9 @@ interface ExpenseFormData {
   contributions: Contribution[];
 }
 
-interface User {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-}
-
 const ExpenseForm: React.FC = () => {
-  const { userDetails, userGroups, setUserExpenses, setUserContribution } = useUserContext();
+  const { userDetails, userGroups, setUserExpenses, setUserContribution } =
+    useUserContext();
 
   const { toast } = useToast();
   const {
@@ -51,10 +45,10 @@ const ExpenseForm: React.FC = () => {
     setValue,
     reset,
     clearErrors,
-    formState: { errors },
+    formState: { errors, isSubmitSuccessful, },
   } = useForm<ExpenseFormData>();
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [groupMembers, setGroupMembers] = useState<User[]>([]);
   const [selectedGroupId, setSelectedGroupId] = useState<string>();
   const [splitType, setSplitType] = useState<string>('equally');
   const [amount, setAmount] = useState<number>(0);
@@ -62,7 +56,7 @@ const ExpenseForm: React.FC = () => {
   const [contributions, setContributions] = useState<
     { member_id: string; amount: number }[]
   >([]);
-  console.log(groupMembers);
+  
   const expenseCategories = [
     'Restaurant',
     'Groceries',
@@ -79,11 +73,13 @@ const ExpenseForm: React.FC = () => {
   ];
 
   const handleCategorySelection = (category: string) => {
+    clearErrors('category');
     setValue('category', category);
     setCategory(category);
   };
 
   const handleGroupIdSelection = (id: string) => {
+    clearErrors('groupId');
     setValue('groupId', id);
     setSelectedGroupId(id);
   };
@@ -93,10 +89,9 @@ const ExpenseForm: React.FC = () => {
   };
 
   const amountChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    clearErrors('amount');
+    clearErrors('amount')
     const value = parseFloat(e.target.value);
     setAmount(value);
-    
   };
 
   const handleContributionsChange = (
@@ -105,12 +100,10 @@ const ExpenseForm: React.FC = () => {
     setContributions(contributions);
   };
 
-  //TO DO: fix this
   const handleCancel = () => {
     reset();
     setCategory('');
     setSelectedGroupId('');
-    setGroupMembers([]);
     setAmount(0);
   };
 
@@ -152,12 +145,13 @@ const ExpenseForm: React.FC = () => {
         };
 
         setUserExpenses((prevExpenses) => [newExpense, ...prevExpenses]);
-       if (sessionuserContribution) {
-         setUserContribution(
-           (prevContribution) =>
-             prevContribution + sessionuserContribution.amount
-         );
-       }
+        
+        if (sessionuserContribution) {
+          setUserContribution(
+            (prevContribution) =>
+              prevContribution + sessionuserContribution.amount
+          );
+        }
         toast({
           description: 'New expense created successfully!.',
         });
@@ -174,50 +168,36 @@ const ExpenseForm: React.FC = () => {
   };
 
   const onSubmit: SubmitHandler<ExpenseFormData> = async (data) => {
-    //form validation, TO DO: toast is not displaying
-    if (!data.expenseName || !data.amount || !selectedGroupId) {
-      toast({
-        variant: 'destructive',
-        title: 'Validation Error',
-        description: 'Please fill in all required fields.',
-      });
-
-      return;
-    }
 
     if (selectedFile) {
       data.receipt = selectedFile;
     }
-    data.groupId = selectedGroupId;
+    if (selectedGroupId) {
+      data.groupId = selectedGroupId;
+    }
+    
     data.category = category;
     data.splitOption = splitType;
     data.isPaid =
       amount === contributions.reduce((total, c) => total + c.amount, 0);
     data.contributions = contributions;
     await addNewExpenseToDatabase(data);
-    //THIS DOES NOT RESET EVERY FORM FIELD, NEEDS TO BE FIXED, I DON:T KNOW HOW
-    reset({
-      expenseName: '',
-      amount: 0,
-      category: 'other',
-      description: '',
-      groupId: '',
-      receipt: undefined,
-      splitOption: 'equally',
-      isPaid: false,
-      contributions: [],
-    });
+
     setCategory('other');
     setSelectedGroupId('');
     setSelectedFile(null);
     setContributions([]);
     setAmount(0);
     setSplitType('equally');
+  
   };
 
-  //TO DO
-  //if sum of split amounts is equal to total amount - success
-  //if not equal - display message - the expense is not paid
+  //reset the form after submission
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset();
+    }
+  }, [isSubmitSuccessful]);
 
   return (
     <div className='p-4'>
@@ -249,7 +229,6 @@ const ExpenseForm: React.FC = () => {
           {...register('category', { required: true })}
           onValueChange={(value) => {
             handleCategorySelection(value);
-            clearErrors('category');
           }}>
           <SelectTrigger
             className={`${errors.category && 'bg-paleRed border-red'}`}>
@@ -276,7 +255,6 @@ const ExpenseForm: React.FC = () => {
           {...register('groupId', { required: true })}
           onValueChange={(value) => {
             handleGroupIdSelection(value);
-            clearErrors('groupId');
           }}>
           <SelectTrigger
             className={`${errors.groupId && 'bg-paleRed border-red'}`}>
