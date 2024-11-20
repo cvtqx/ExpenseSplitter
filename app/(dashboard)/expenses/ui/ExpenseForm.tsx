@@ -79,6 +79,7 @@ const ExpenseForm: React.FC = () => {
   ];
 
   const handleCategorySelection = (category: string) => {
+    setValue('category', category);
     setCategory(category);
   };
 
@@ -242,8 +243,12 @@ const ExpenseForm: React.FC = () => {
         )}
 
         <Select
-          {...register('category')}
-          onValueChange={handleCategorySelection}>
+          {...register('category', { required: true })}
+          onValueChange={(value) => {
+            handleCategorySelection(value);
+            clearErrors('category')
+          }
+          }>
           <SelectTrigger>
             <SelectValue placeholder='Select a category' />
           </SelectTrigger>
@@ -257,7 +262,9 @@ const ExpenseForm: React.FC = () => {
             ))}
           </SelectContent>
         </Select>
-
+        {errors.category && (
+          <span className='text-red'>This field is required</span>
+        )}
         <Textarea
           placeholder='Description'
           {...register('description')}
