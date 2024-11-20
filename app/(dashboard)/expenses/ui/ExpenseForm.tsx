@@ -93,9 +93,10 @@ const ExpenseForm: React.FC = () => {
   };
 
   const amountChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    clearErrors('amount');
     const value = parseFloat(e.target.value);
     setAmount(value);
-    clearErrors('amount');
+    
   };
 
   const handleContributionsChange = (
@@ -228,6 +229,7 @@ const ExpenseForm: React.FC = () => {
           type='text'
           placeholder='Expense Name'
           {...register('expenseName', { required: true })}
+          className={`${errors.expenseName && 'bg-paleRed border-red'}`}
         />
         {errors.expenseName && (
           <span className='text-red'>This field is required</span>
@@ -237,6 +239,7 @@ const ExpenseForm: React.FC = () => {
           placeholder='Amount'
           {...register('amount', { required: true })}
           onChange={amountChangeHandler}
+          className={`${errors.amount && 'bg-paleRed border-red'}`}
         />
         {errors.amount && (
           <span className='text-red'>This field is required</span>
@@ -246,10 +249,10 @@ const ExpenseForm: React.FC = () => {
           {...register('category', { required: true })}
           onValueChange={(value) => {
             handleCategorySelection(value);
-            clearErrors('category')
-          }
-          }>
-          <SelectTrigger>
+            clearErrors('category');
+          }}>
+          <SelectTrigger
+            className={`${errors.category && 'bg-paleRed border-red'}`}>
             <SelectValue placeholder='Select a category' />
           </SelectTrigger>
           <SelectContent>
@@ -275,7 +278,8 @@ const ExpenseForm: React.FC = () => {
             handleGroupIdSelection(value);
             clearErrors('groupId');
           }}>
-          <SelectTrigger>
+          <SelectTrigger
+            className={`${errors.groupId && 'bg-paleRed border-red'}`}>
             <SelectValue placeholder='Select a Group' />
           </SelectTrigger>
           <SelectContent>
