@@ -44,15 +44,28 @@ const ExpenseForm: React.FC = () => {
     handleSubmit,
     setValue,
     reset,
+    resetField,
     clearErrors,
-    formState: { errors, isSubmitSuccessful, },
-  } = useForm<ExpenseFormData>();
+    formState: { errors, isSubmitSuccessful },
+  } = useForm<ExpenseFormData>({
+    defaultValues: {
+      expenseName: '',
+      amount: undefined,
+      category: '',
+      description: '',
+      groupId: undefined,
+      receipt: undefined,
+      splitOption: undefined,
+      isPaid: false,
+      contributions: [],
+    },
+  });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedGroupId, setSelectedGroupId] = useState<string>();
   const [splitType, setSplitType] = useState<string>('equally');
   const [amount, setAmount] = useState<number>(0);
-  const [category, setCategory] = useState<string>('other');
+  const [category, setCategory] = useState<string>('');
   const [contributions, setContributions] = useState<
     { member_id: string; amount: number }[]
   >([]);
@@ -102,9 +115,16 @@ const ExpenseForm: React.FC = () => {
 
   const handleCancel = () => {
     reset();
+    // Manually reset the Select component values using setValue
+    setValue('category', null, { shouldValidate: true }); 
+    resetField('groupId'); 
+    resetField('splitOption');
     setCategory('');
     setSelectedGroupId('');
+    setSelectedFile(null);
+    setContributions([]);
     setAmount(0);
+    setSplitType('equally');
   };
 
   const addNewExpenseToDatabase = async (data: ExpenseFormData) => {
@@ -114,8 +134,8 @@ const ExpenseForm: React.FC = () => {
     formData.append('amount', data.amount.toString());
     formData.append('category', data.category);
     formData.append('is_paid', data.isPaid.toString());
-
     formData.append('contributions', JSON.stringify(data.contributions));
+    
     if (data.receipt) {
       formData.append('file', data.receipt);
     }
@@ -145,7 +165,7 @@ const ExpenseForm: React.FC = () => {
         };
 
         setUserExpenses((prevExpenses) => [newExpense, ...prevExpenses]);
-        
+
         if (sessionuserContribution) {
           setUserContribution(
             (prevContribution) =>
@@ -168,7 +188,9 @@ const ExpenseForm: React.FC = () => {
   };
 
   const onSubmit: SubmitHandler<ExpenseFormData> = async (data) => {
-
+    if (!data) {
+      return;
+    }
     if (selectedFile) {
       data.receipt = selectedFile;
     }
@@ -181,16 +203,9 @@ const ExpenseForm: React.FC = () => {
     data.isPaid =
       amount === contributions.reduce((total, c) => total + c.amount, 0);
     data.contributions = contributions;
-    await addNewExpenseToDatabase(data);
-
-    setCategory('other');
-    setSelectedGroupId('');
-    setSelectedFile(null);
-    setContributions([]);
-    setAmount(0);
-    setSplitType('equally');
-  
-  };
+    //await addNewExpenseToDatabase(data);
+console.log('DATA', data)
+     };
 
   //reset the form after submission
   useEffect(() => {
