@@ -264,6 +264,7 @@ console.log('DATA', data)
         )}
         <Textarea
           placeholder='Description'
+          
           {...register('description')}
         />
         <Select
