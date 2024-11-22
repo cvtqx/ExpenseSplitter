@@ -1,4 +1,3 @@
-
 export const SkeletonLoader = ({
   width = '100%',
   height = '100px',
@@ -135,26 +134,21 @@ export default function DashboardSkeleton() {
 
         <div className='mt-4 flex md:flex-row justify-between items-center'>
           <div>
-            <p>
-              <SkeletonLoader
-                width='5rem'
-                height='1.25rem'
-              />
-            </p>
+            <SkeletonLoader
+              width='5rem'
+              height='1.25rem'
+            />
           </div>
           <div className='flex flex-row gap-5'>
-            <p>
-              <SkeletonLoader
-                width='4rem'
-                height='1.25rem'
-              />
-            </p>
-            <p>
-              <SkeletonLoader
-                width='4rem'
-                height='1.25rem'
-              />
-            </p>
+            <SkeletonLoader
+              width='4rem'
+              height='1.25rem'
+            />
+
+            <SkeletonLoader
+              width='4rem'
+              height='1.25rem'
+            />
           </div>
         </div>
         <div className='flex flex-col md:flex-row gap-10 mt-10'>
