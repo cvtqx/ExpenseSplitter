@@ -1,12 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 import { format } from 'date-fns';
 import React from 'react';
+import { useUserContext } from '@/app/context/UserContext';
 
 interface Expense {
     _id: string;
     group_id: string;
-    is_paid: boolean;
+    is_paid?: boolean;
     name: string;
     category: string;
     description: string;
@@ -15,7 +18,43 @@ interface Expense {
     date: string;
 }
 
-const ExpenseCard = ({ expense }: {expense: Expense}) => {
+const ExpenseCard = ({ expense }: { expense: Expense }) => {
+   const {  userExpenses, setUserExpenses, setUserContribution } =
+     useUserContext();
+  const { toast } = useToast();
+
+  const deleteExpense = async (expenseId: string, groupId: string) => {
+    try {
+      const response = await fetch(
+        `api/groups/${groupId}/expenses/${expenseId}/deleteExpense`,
+        {
+          method: 'DELETE',
+        }
+      );
+      if (!response.ok) {
+        throw new Error('failed to delete expense');
+      }
+      toast({
+        description: 'Expense deleted successfully!.',
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: 'There was a problem deleting an expense.',
+        action: <ToastAction altText='Try again'>Try again</ToastAction>,
+      });
+      console.error('Error deleting expense', error);
+    }
+  }
+  const deleteExpenseHandler = async() => {
+   
+      await deleteExpense(expense._id, expense.group_id);
+    setUserExpenses((prevExpenses) =>
+      prevExpenses.filter((prevExpense) => prevExpense._id !== expense._id)); 
+    setUserContribution(prevContribution => prevContribution - expense.amount);
+  }
+
   return (
     <Card className='bg-pampas w-full sm:w-64 mt-8 transition-transform transform hover:scale-105 hover:shadow'>
       <CardHeader>
@@ -40,7 +79,8 @@ const ExpenseCard = ({ expense }: {expense: Expense}) => {
         </Button>
         <Button
           className='bg-red text-white'
-          type='button'>
+          type='button'
+        onClick={deleteExpenseHandler}>
           Delete
         </Button>
       </CardFooter>

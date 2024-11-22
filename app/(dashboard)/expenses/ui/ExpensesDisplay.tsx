@@ -16,7 +16,7 @@ const ExpensesDisplay = () => {
   return (
     <div className='flex flex-wrap gap-4'>
       {sortedExpenses.map((expense) => (
-        <ExpenseCard key={expense._id} expense={expense} />
+        <ExpenseCard key={expense._id} expense={expense}  />
       ))}
     </div>
   );

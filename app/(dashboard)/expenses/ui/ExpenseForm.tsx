@@ -116,7 +116,7 @@ const ExpenseForm: React.FC = () => {
   const handleCancel = () => {
     reset();
     // Manually reset the Select component values using setValue
-    setValue('category', null, { shouldValidate: true }); 
+    setValue('category', '', { shouldValidate: true }); 
     resetField('groupId'); 
     resetField('splitOption');
     setCategory('');
