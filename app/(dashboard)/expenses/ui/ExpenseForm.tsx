@@ -286,7 +286,7 @@ const ExpenseForm: React.FC = () => {
           <Input
             type='file'
             accept='image/*'
-            className='w-64 ml-4'
+            className='md:w-64 md:ml-4'
             {...register('receipt')}
           
           />

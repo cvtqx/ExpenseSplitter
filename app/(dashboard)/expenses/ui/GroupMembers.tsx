@@ -104,7 +104,7 @@ export const GroupMembers: React.FC<GroupMembersProps> = ({
                   onChange={(e) =>
                     handleCustomAmountChange(member._id, e.target.value)
                   }
-                  className='ml-4'
+                  className='w-24 md:w-full ml-2'
                 />
               </div>
             )}
