@@ -44,9 +44,9 @@ const ExpenseForm: React.FC = () => {
     handleSubmit,
     setValue,
     reset,
-    resetField,
     clearErrors,
     formState: { errors, isSubmitSuccessful },
+    watch,
   } = useForm<ExpenseFormData>({
     defaultValues: {
       expenseName: '',
@@ -55,20 +55,22 @@ const ExpenseForm: React.FC = () => {
       description: '',
       groupId: undefined,
       receipt: undefined,
-      splitOption: undefined,
+      splitOption: 'equally',
       isPaid: false,
       contributions: [],
     },
   });
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedGroupId, setSelectedGroupId] = useState<string>();
-  const [splitType, setSplitType] = useState<string>('equally');
-  const [amount, setAmount] = useState<number>(0);
-  const [category, setCategory] = useState<string>('');
   const [contributions, setContributions] = useState<
     { member_id: string; amount: number }[]
   >([]);
+  
+  // watch form state values
+    const selectedFile = watch('receipt');
+    const selectedGroupId = watch('groupId');
+    const category = watch('category');
+    const splitType = watch('splitOption');
+    const amount = watch('amount');
   
   const expenseCategories = [
     'Restaurant',
@@ -88,23 +90,21 @@ const ExpenseForm: React.FC = () => {
   const handleCategorySelection = (category: string) => {
     clearErrors('category');
     setValue('category', category);
-    setCategory(category);
   };
 
   const handleGroupIdSelection = (id: string) => {
     clearErrors('groupId');
     setValue('groupId', id);
-    setSelectedGroupId(id);
   };
 
   const handleSplitTypeSelection = (type: string) => {
-    setSplitType(type);
+    setValue('splitOption', type);
   };
 
   const amountChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    clearErrors('amount')
+    clearErrors('amount');
     const value = parseFloat(e.target.value);
-    setAmount(value);
+    setValue('amount', value);
   };
 
   const handleContributionsChange = (
@@ -115,16 +115,7 @@ const ExpenseForm: React.FC = () => {
 
   const handleCancel = () => {
     reset();
-    // Manually reset the Select component values using setValue
-    setValue('category', '', { shouldValidate: true }); 
-    resetField('groupId'); 
-    resetField('splitOption');
-    setCategory('');
-    setSelectedGroupId('');
-    setSelectedFile(null);
     setContributions([]);
-    setAmount(0);
-    setSplitType('equally');
   };
 
   const addNewExpenseToDatabase = async (data: ExpenseFormData) => {
@@ -135,7 +126,7 @@ const ExpenseForm: React.FC = () => {
     formData.append('category', data.category);
     formData.append('is_paid', data.isPaid.toString());
     formData.append('contributions', JSON.stringify(data.contributions));
-    
+
     if (data.receipt) {
       formData.append('file', data.receipt);
     }
@@ -197,20 +188,21 @@ const ExpenseForm: React.FC = () => {
     if (selectedGroupId) {
       data.groupId = selectedGroupId;
     }
-    
+
     data.category = category;
     data.splitOption = splitType;
     data.isPaid =
       amount === contributions.reduce((total, c) => total + c.amount, 0);
     data.contributions = contributions;
-    //await addNewExpenseToDatabase(data);
-console.log('DATA', data)
-     };
+    await addNewExpenseToDatabase(data);
+    console.log('DATA', data);
+  };
 
   //reset the form after submission
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
+      setContributions([]);
     }
   }, [isSubmitSuccessful]);
 
@@ -264,7 +256,6 @@ console.log('DATA', data)
         )}
         <Textarea
           placeholder='Description'
-          
           {...register('description')}
         />
         <Select
@@ -297,11 +288,7 @@ console.log('DATA', data)
             accept='image/*'
             className='w-64 ml-4'
             {...register('receipt')}
-            onChange={(e) => {
-              if (e.target.files && e.target.files[0]) {
-                setSelectedFile(e.target.files[0]);
-              }
-            }}
+          
           />
         </label>
         <Select
