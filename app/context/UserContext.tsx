@@ -110,12 +110,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         const expensesData = await expensesResponse.json();
         const expensesDetailsData = await expensesDetailsResponse.json();
 
-
-        console.log('userData', userData);
-        console.log('All users', allUsersData);
-        console.log('Groups', groupsData);
-        console.log('Expenses', expensesData);
-        console.log('Details', expensesDetailsData);
+        // console.log('userData', userData);
+        // console.log('All users', allUsersData);
+        // console.log('Groups', groupsData);
+        // console.log('Expenses', expensesData);
+        // console.log('Details', expensesDetailsData);
 
         const sessionUserFriendsIds = userData.user.friends;
         const sessionUserFriendsData = allUsersData.users.filter((user: User) =>
