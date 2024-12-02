@@ -110,12 +110,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         const expensesData = await expensesResponse.json();
         const expensesDetailsData = await expensesDetailsResponse.json();
 
-        // console.log('userData', userData);
-        // console.log('All users', allUsersData);
-        // console.log('Groups', groupsData);
-        // console.log('Expenses', expensesData);
-        // console.log('Details', expensesDetailsData);
-
         const sessionUserFriendsIds = userData.user.friends;
         const sessionUserFriendsData = allUsersData.users.filter((user: User) =>
           sessionUserFriendsIds.includes(user._id)
@@ -136,7 +130,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           );
 
         //get details of each expense of the session user:
-
         //make array of expense ids for easy search
               const userExpensesIds = expensesData.userExpenses.map(
                 (expense: UserExpense) => expense.expense_id
@@ -168,66 +161,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           console.error('Error fetching one or more resources.')
         }
       
-    }
-
-    // const getSessionUserExpenses = async () => {
-    //   try {
-    //     const response = await fetch(
-    //       `/api/users/${sessionUserId}/viewExpenses`
-    //     );
-    //     if (!response.ok) {
-    //       throw new Error('Failed to fetch expenses.');
-    //     }
-    //     const { userExpenses } = await response.json();
-
-    //     //get total contribution
-    //     if (Array.isArray(userExpenses)) {
-    //       const contribution = userExpenses.reduce((acc, currentItem) => {
-    //         return acc + (currentItem.contribution || 0);
-    //       }, 0);
-    //       setUserContribution(contribution); //lifetime contribution
-
-    //       //make array of expense ids for easy search
-    //       const userExpensesIds = userExpenses.map(
-    //         (expense) => expense.expense_id
-    //       );
-
-    //       //get all expenses and find user expenses among them because we need each expense details
-    //       const result = await fetch('/api/expenses');
-    //       if (!result.ok) {
-    //         throw new Error('Failed to fetch all expenses.');
-    //       }
-    //       const { expenses }: { expenses: Expense[] } = await result.json();
-
-    //       const findUserContributionForCurrentExpense = (id: string) => {
-    //         if (Array.isArray(userExpenses)) {
-    //           const foundExpense = userExpenses.find(
-    //             (expense) => expense.expense_id === id
-    //           );
-    //           return foundExpense ? foundExpense.contribution : undefined;
-    //         }
-    //       };
-    //       const userExpenseDetails: Expense[] = expenses
-    //         .filter((expense) => userExpensesIds.includes(expense._id))
-    //         .map((expense) => {
-    //           return {
-    //             ...expense,
-    //             contribution: findUserContributionForCurrentExpense(
-    //               expense._id
-    //             ),
-    //           };
-    //         });
-
-    //       setUserExpenses(userExpenseDetails);
-    //     }
-    //   } catch (error) {
-    //     console.error('Error fetching expenses:', error);
-    //   }
-    // };
-
-    // getSessionUserFriends();
-    // getSessionUserGroups();
-    // getSessionUserExpenses();
+    } 
     fetchData();
   }, [sessionUserId]);
 
