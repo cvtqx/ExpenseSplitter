@@ -88,7 +88,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           expensesDetailsResponse,
         ] = await Promise.all([
           fetch(`/api/users?id=${sessionUserId}`),
-          fetch(`/api/users`),
+          fetch('/api/users'),
           fetch('/api/groups'),
           fetch(`/api/users/${sessionUserId}/viewExpenses`),
           fetch('api/expenses')
