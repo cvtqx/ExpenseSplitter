@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import RecentActivity from './ui/recentActivity';
 import ExpensesThisMonth from './ui/expensesThisMonth';
 import ExpensesGraph from './ui/expensesGraph';
-import DashboardSkeleton from '@/app/global-ui/skeletons';
+
 
 export default function Page() {
   const { userDetails, userGroups, userFriends, userContribution } =

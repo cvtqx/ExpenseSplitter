@@ -25,7 +25,7 @@ interface Expense {
 }
 
 const ExpenseCard = ({ expense }: { expense: Expense }) => {
-  const { setUserExpenses, setUserContribution } = useUserContext();
+  const { setUserExpenses} = useUserContext();
   const { toast } = useToast();
 
   const deleteExpenseHandler = async () => {
@@ -39,10 +39,10 @@ const ExpenseCard = ({ expense }: { expense: Expense }) => {
         setUserExpenses((prevExpenses) =>
           prevExpenses.filter((prevExpense) => prevExpense._id !== expense._id)
         );
-
-        setUserContribution(
-          (prevContribution) => prevContribution - expense.amount
-        );
+//removed this for now as this messes up the calculation
+        // setUserContribution(
+        //   (prevContribution) => prevContribution - expense.amount
+        // );
       }
     } catch (error) {
       toast({
