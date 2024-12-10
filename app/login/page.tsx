@@ -20,7 +20,7 @@ const Page = () => {
         <Button
           className='bg-[#57893C] w-80'
           onClick={() =>
-            signIn('google', { callbackUrl: 'http://localhost:3000/' })
+            signIn('google')
           }>
           {' '}
           Continue with Google
