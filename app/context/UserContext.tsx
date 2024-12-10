@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
 
 interface User {
@@ -74,11 +74,16 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userExpenses, setUserExpenses] = useState<Expense[]>([]);
   const [userContribution, setUserContribution] = useState<number>(0);
 
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const sessionUserId = data?.user?.id;
 
   useEffect(() => {
     if (!sessionUserId || sessionUserId === '01') return;
     const fetchData = async () => {
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = new AbortController();
+
       try {
         const [
           userResponse,
@@ -87,13 +92,23 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           expensesResponse,
           expensesDetailsResponse,
         ] = await Promise.all([
-          fetch(`/api/users?id=${sessionUserId}`),
-          fetch('/api/users'),
-          fetch('/api/groups'),
-          fetch(`/api/users/${sessionUserId}/viewExpenses`),
-          fetch('api/expenses')
+          fetch(`/api/users?id=${sessionUserId}`, {
+            signal: abortControllerRef.current?.signal,
+          }),
+          fetch("/api/users", {
+            signal: abortControllerRef.current?.signal,
+          }),
+          fetch("/api/groups", {
+            signal: abortControllerRef.current?.signal,
+          }),
+          fetch(`/api/users/${sessionUserId}/viewExpenses`, {
+            signal: abortControllerRef.current?.signal,
+          }),
+          fetch("api/expenses", {
+            signal: abortControllerRef.current?.signal,
+          }),
         ]);
-
+ 
         if (
           !userResponse.ok ||
           !allUsersResponse.ok ||
@@ -116,8 +131,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
         );
         const sessionUserGroups = groupsData.success
           ? groupsData.groups.filter((group: Group) =>
-              group.members.includes(sessionUserId)
-            )
+            group.members.includes(sessionUserId)
+          )
           : [];
         
         //Calculate total amount of contributions of the session user
@@ -131,37 +146,38 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
 
         //get details of each expense of the session user:
         //make array of expense ids for easy search
-              const userExpensesIds = expensesData.userExpenses.map(
-                (expense: UserExpense) => expense.expense_id
-              );
+        const userExpensesIds = expensesData.userExpenses.map(
+          (expense: UserExpense) => expense.expense_id
+        );
         //helper function
-         const findUserContributionForCurrentExpense = (id: string) => {            
-              const foundExpense = expensesData.userExpenses.find(
-                (expense: UserExpense) => expense.expense_id === id
-              );
-              return foundExpense ? foundExpense.contribution : 0;
-         };
+        const findUserContributionForCurrentExpense = (id: string) => {
+          const foundExpense = expensesData.userExpenses.find(
+            (expense: UserExpense) => expense.expense_id === id
+          );
+          return foundExpense ? foundExpense.contribution : 0;
+        };
         
         const userExpenseDetails = expensesDetailsData.expenses.filter((expense: Expense) => userExpensesIds.includes(expense._id))
-            .map((expense: Expense) => {
-              return {
-                ...expense,
-                contribution: findUserContributionForCurrentExpense(
-                  expense._id
-                ),
-              };
-            });
+          .map((expense: Expense) => {
+            return {
+              ...expense,
+              contribution: findUserContributionForCurrentExpense(
+                expense._id
+              ),
+            };
+          });
        
         setUserContribution(lifetimeContrubutionOfSessionUser);
         setUserDetails(userData.user);
         setUserGroups(sessionUserGroups);
         setUserFriends(sessionUserFriendsData);
         setUserExpenses(userExpenseDetails);
-      }catch (error) {
-          console.error('Error fetching one or more resources.')
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error('Error fetching one or more resources:', error)
         }
-      
-    } 
+      }
+    }    
     fetchData();
   }, [sessionUserId]);
 
