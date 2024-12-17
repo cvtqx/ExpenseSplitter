@@ -63,6 +63,7 @@ export default function AddNewMemberForm({
     const query = e.target.value;
     setHasStartedSearch(true);
 
+    console.log('query', query)
     if (query) {
       try {
         //get all users
