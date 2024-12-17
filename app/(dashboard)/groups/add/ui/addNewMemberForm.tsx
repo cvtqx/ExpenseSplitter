@@ -8,6 +8,7 @@ import {
 import { Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useDebouncedCallback } from "use-debounce";
 
 interface User {
   _id: string;
@@ -23,6 +24,7 @@ interface AddNewMemberFormProps {
 export default function AddNewMemberForm({
   onAddMember,
 }: AddNewMemberFormProps) {
+  const [query, setQuery] = useState<string>('')
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [hasStartedSearch, setHasStartedSearch] = useState<boolean>(false);
   const [userFriends, setUserFriends] = useState<string[]>([]);
@@ -59,13 +61,14 @@ export default function AddNewMemberForm({
     return users.filter(user => userIds.includes(user._id))
   }
 
-  const handleSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
+  const handleSearch = useDebouncedCallback(async () => {
+    
     setHasStartedSearch(true);
 
     console.log('query', query)
     if (query) {
       try {
+        console.log('fetching')
         //get all users
         const response = await fetch('/api/users');
         if (!response.ok) {
@@ -90,8 +93,12 @@ export default function AddNewMemberForm({
     } else {
       setSearchResults([]);
     }
-  };
+  }, 1000);
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    handleSearch()
+  }
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -110,7 +117,7 @@ export default function AddNewMemberForm({
                 type='search'
                 placeholder='Enter name or email...'
                 className='w-full appearance-none bg-background pl-8 shadow-none'
-                onChange={handleSearch}
+                onChange={handleInputChange}
               />
             </div>
             <div className='mt-4'>
