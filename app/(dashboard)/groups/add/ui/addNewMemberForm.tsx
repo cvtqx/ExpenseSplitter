@@ -65,10 +65,8 @@ export default function AddNewMemberForm({
     
     setHasStartedSearch(true);
 
-    console.log('query', query)
     if (query) {
-      try {
-        console.log('fetching')
+      try {        
         //get all users
         const response = await fetch('/api/users');
         if (!response.ok) {
